@@ -1,0 +1,42 @@
+# Unity generated folders
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# IDE folders and generated project files
+/.vs/
+/.vscode/
+/.idea/
+*.csproj
+*.sln
+*.slnx
+*.suo
+*.user
+*.userprefs
+
+# Plastic SCM leftovers (history stays in Plastic)
+/.plastic/
+ignore.conf
+
+# Build outputs and packages
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# Crash and debug files
+sysinfo.txt
+crashlytics-build.properties
+*.pdb
+*.mdb
+
+# OS files
+.DS_Store*
+Thumbs.db
+Desktop.ini
