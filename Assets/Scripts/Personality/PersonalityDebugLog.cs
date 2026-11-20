@@ -22,12 +22,14 @@ public class PersonalityDebugLog : MonoBehaviour
     {
         controller.UpcomingRevealed += LogUpcoming;
         controller.Shifted += LogShift;
+        controller.ActionCounted += LogActionCounted;
     }
 
     private void OnDisable()
     {
         controller.UpcomingRevealed -= LogUpcoming;
         controller.Shifted -= LogShift;
+        controller.ActionCounted -= LogActionCounted;
     }
 
     private void Update()
@@ -49,11 +51,15 @@ public class PersonalityDebugLog : MonoBehaviour
         Debug.Log($"Personality shifted: {previous} -> {current}");
     }
 
+    private void LogActionCounted()
+    {
+        Debug.Log($"Counted action. Personality {controller.Current}, " +
+                  $"actions in cycle {controller.ActionsInCycle}");
+    }
+
     [ContextMenu("Register counted action")]
     private void RegisterTestAction()
     {
         controller.RegisterCountedAction();
-        Debug.Log($"Counted action. Personality {controller.Current}, " +
-                  $"actions in cycle {controller.ActionsInCycle}");
     }
 }

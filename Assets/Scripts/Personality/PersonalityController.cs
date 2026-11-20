@@ -15,6 +15,9 @@ public class PersonalityController : MonoBehaviour
     public int ActionsInCycle => cycle.ActionsInCycle;
 
     public event Action<PersonalityType> UpcomingRevealed;
+
+    // Raised after every counted action has been registered.
+    public event Action ActionCounted;
     public event Action<PersonalityType, PersonalityType> Shifted;
 
     private void Awake()
@@ -27,5 +30,6 @@ public class PersonalityController : MonoBehaviour
     public void RegisterCountedAction()
     {
         cycle.RegisterAction();
+        ActionCounted?.Invoke();
     }
 }
