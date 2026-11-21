@@ -15,6 +15,9 @@ public class PlayerInputReader : MonoBehaviour
     private InputAction interactAction;
     private InputAction skill1Action;
     private InputAction skill2Action;
+    private InputAction consume1Action;
+    private InputAction consume2Action;
+    private InputAction consume3Action;
     private InputAction trackAction;
     private InputAction rotateHoldAction;
     private InputAction pauseAction;
@@ -34,6 +37,9 @@ public class PlayerInputReader : MonoBehaviour
     public event Action InteractPressed;
     public event Action Skill1Pressed;
     public event Action Skill2Pressed;
+    public event Action Consume1Pressed;
+    public event Action Consume2Pressed;
+    public event Action Consume3Pressed;
     public event Action TrackPressed;
     public event Action PausePressed;
 
@@ -47,6 +53,9 @@ public class PlayerInputReader : MonoBehaviour
         interactAction = actions.FindAction(MapName + "/Interact", true);
         skill1Action = actions.FindAction(MapName + "/Skill1", true);
         skill2Action = actions.FindAction(MapName + "/Skill2", true);
+        consume1Action = actions.FindAction(MapName + "/Consume1", true);
+        consume2Action = actions.FindAction(MapName + "/Consume2", true);
+        consume3Action = actions.FindAction(MapName + "/Consume3", true);
         trackAction = actions.FindAction(MapName + "/Track", true);
         rotateHoldAction = actions.FindAction(MapName + "/RotateHold", true);
         pauseAction = actions.FindAction(MapName + "/Pause", true);
@@ -57,6 +66,9 @@ public class PlayerInputReader : MonoBehaviour
         interactAction.performed += HandleInteract;
         skill1Action.performed += HandleSkill1;
         skill2Action.performed += HandleSkill2;
+        consume1Action.performed += HandleConsume1;
+        consume2Action.performed += HandleConsume2;
+        consume3Action.performed += HandleConsume3;
         trackAction.performed += HandleTrack;
         pauseAction.performed += HandlePause;
     }
@@ -66,6 +78,9 @@ public class PlayerInputReader : MonoBehaviour
         interactAction.performed -= HandleInteract;
         skill1Action.performed -= HandleSkill1;
         skill2Action.performed -= HandleSkill2;
+        consume1Action.performed -= HandleConsume1;
+        consume2Action.performed -= HandleConsume2;
+        consume3Action.performed -= HandleConsume3;
         trackAction.performed -= HandleTrack;
         pauseAction.performed -= HandlePause;
     }
@@ -73,6 +88,9 @@ public class PlayerInputReader : MonoBehaviour
     private void HandleInteract(InputAction.CallbackContext context) => InteractPressed?.Invoke();
     private void HandleSkill1(InputAction.CallbackContext context) => Skill1Pressed?.Invoke();
     private void HandleSkill2(InputAction.CallbackContext context) => Skill2Pressed?.Invoke();
+    private void HandleConsume1(InputAction.CallbackContext context) => Consume1Pressed?.Invoke();
+    private void HandleConsume2(InputAction.CallbackContext context) => Consume2Pressed?.Invoke();
+    private void HandleConsume3(InputAction.CallbackContext context) => Consume3Pressed?.Invoke();
     private void HandleTrack(InputAction.CallbackContext context) => TrackPressed?.Invoke();
     private void HandlePause(InputAction.CallbackContext context) => PausePressed?.Invoke();
 }

@@ -9,6 +9,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private Transform cameraTransform;
 
+    // Temporary multiplier applied on top of the base move speed. 1 means no change.
+    public float SpeedMultiplier { get; set; } = 1f;
+
     private CharacterController controller;
     private PlayerInputReader input;
 
@@ -32,6 +35,6 @@ public class PlayerMovement : MonoBehaviour
         Vector3 direction = Vector3.ClampMagnitude(forward * move.y + right * move.x, 1f);
 
         // SimpleMove applies gravity and delta time itself, so it takes a speed in units per second.
-        controller.SimpleMove(direction * moveSpeed);
+        controller.SimpleMove(direction * moveSpeed * SpeedMultiplier);
     }
 }

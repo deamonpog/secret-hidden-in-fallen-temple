@@ -40,3 +40,7 @@ crashlytics-build.properties
 .DS_Store*
 Thumbs.db
 Desktop.ini
+
+# Dont include third party files
+/Assets/ThirdParty/
+/Assets/ThirdParty.meta
