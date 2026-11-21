@@ -9,15 +9,15 @@ public class FruitPickup : MonoBehaviour, IInteractable
 
     public string PromptText => "Pick up fruit";
 
-    public bool CanInteract(PlayerCharacter player)
+    public bool CanInteract(Player player)
     {
         return !collected;
     }
 
-    public void Interact(PlayerCharacter player)
+    public void Interact(Player player)
     {
         collected = true;
-        player.Inventory.Items.Add(ItemType.Fruit);
+        player.Add(ItemType.Fruit);
         player.RegisterCountedAction();
         Destroy(gameObject);
     }

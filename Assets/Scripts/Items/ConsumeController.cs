@@ -3,7 +3,7 @@ using UnityEngine;
 // Uses items from the player's inventory when a consume button is pressed.
 // Each slot is tied to one item. An item that cannot be consumed leaves its slot unused.
 // The speed boost sets a temporary multiplier on PlayerMovement.
-[RequireComponent(typeof(PlayerCharacter))]
+[RequireComponent(typeof(Player))]
 [RequireComponent(typeof(PlayerInputReader))]
 public class ConsumeController : MonoBehaviour
 {
@@ -15,14 +15,14 @@ public class ConsumeController : MonoBehaviour
     [SerializeField] private float boostMultiplier = 1.5f;
     [SerializeField] private float boostDuration = 3f;
 
-    private PlayerCharacter player;
+    private Player player;
     private PlayerInputReader input;
     private ConsumeRules rules;
     private float boostRemaining;
 
     private void Awake()
     {
-        player = GetComponent<PlayerCharacter>();
+        player = GetComponent<Player>();
         input = GetComponent<PlayerInputReader>();
         rules = new ConsumeRules(fruitHeal, cookedSquirrelHeal);
     }
@@ -65,7 +65,7 @@ public class ConsumeController : MonoBehaviour
         if (!rules.TryGetEffect(item, out ConsumeEffect effect))
             return;
 
-        if (!player.Inventory.Items.TryRemove(item))
+        if (!player.TryRemove(item))
             return;
 
         player.Health.Heal(effect.HealAmount);

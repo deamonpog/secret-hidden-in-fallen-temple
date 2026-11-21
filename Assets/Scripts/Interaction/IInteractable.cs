@@ -5,8 +5,8 @@ public interface IInteractable
     string PromptText { get; }
 
     // True when this player can interact with it right now.
-    bool CanInteract(PlayerCharacter player);
+    bool CanInteract(Player player);
 
     // Performs the interaction. Only called when CanInteract is true.
-    void Interact(PlayerCharacter player);
+    void Interact(Player player);
 }

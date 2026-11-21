@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Finds the nearest interactable in range and triggers it when the interact button is pressed.
-[RequireComponent(typeof(PlayerCharacter))]
+[RequireComponent(typeof(Player))]
 [RequireComponent(typeof(PlayerInputReader))]
 public class InteractionSensor : MonoBehaviour
 {
@@ -10,7 +10,7 @@ public class InteractionSensor : MonoBehaviour
 
     private readonly Collider[] hits = new Collider[32];
 
-    private PlayerCharacter player;
+    private Player player;
     private PlayerInputReader input;
 
     // The interactable that would be triggered now, or null when none is in range.
@@ -20,7 +20,7 @@ public class InteractionSensor : MonoBehaviour
 
     private void Awake()
     {
-        player = GetComponent<PlayerCharacter>();
+        player = GetComponent<Player>();
         input = GetComponent<PlayerInputReader>();
     }
 

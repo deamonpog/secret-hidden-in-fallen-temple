@@ -14,18 +14,18 @@ public class FruitTree : MonoBehaviour, IInteractable
 
     public string PromptText => "Take fruit";
 
-    public bool CanInteract(PlayerCharacter player)
+    public bool CanInteract(Player player)
     {
         return !used && player.Personality.Current == PersonalityType.C;
     }
 
-    public void Interact(PlayerCharacter player)
+    public void Interact(Player player)
     {
         used = true;
         if (fruitVisual != null)
             fruitVisual.SetActive(false);
 
-        player.Inventory.Items.Add(ItemType.Fruit, fruitAmount);
+        player.Add(ItemType.Fruit, fruitAmount);
         player.RegisterCountedAction();
     }
 }

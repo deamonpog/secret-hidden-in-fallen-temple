@@ -5,28 +5,28 @@ using UnityEngine;
 /// component menu. For testing only; remove it once a HUD exists.
 /// </summary>
 [RequireComponent(typeof(Health))]
-[RequireComponent(typeof(PlayerInventory))]
+[RequireComponent(typeof(Player))]
 public class CharacterDebugLog : MonoBehaviour
 {
     private Health health;
-    private PlayerInventory inventory;
+    private Player player;
 
     private void Awake()
     {
         health = GetComponent<Health>();
-        inventory = GetComponent<PlayerInventory>();
+        player = GetComponent<Player>();
     }
 
     private void OnEnable()
     {
-        inventory.Items.Changed += LogItemChanged;
+        player.InventoryChanged += LogItemChanged;
         health.Changed += LogHealthChanged;
         health.Died += LogDied;
     }
 
     private void OnDisable()
     {
-        inventory.Items.Changed -= LogItemChanged;
+        player.InventoryChanged -= LogItemChanged;
         health.Changed -= LogHealthChanged;
         health.Died -= LogDied;
     }
