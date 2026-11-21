@@ -605,7 +605,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.5, z: 0}
-  m_LocalScale: {x: 30, y: 1, z: 30}
+  m_LocalScale: {x: 100, y: 1, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1339,12 +1339,12 @@ GameObject:
   - component: {fileID: 1769162338}
   - component: {fileID: 1769162341}
   - component: {fileID: 1769162340}
-  - component: {fileID: 1769162347}
   - component: {fileID: 1769162346}
   - component: {fileID: 1769162345}
   - component: {fileID: 1769162344}
   - component: {fileID: 1769162343}
   - component: {fileID: 1769162342}
+  - component: {fileID: 1769162348}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1548,7 +1548,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44d1887889fdae342b58f673256d1fe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
---- !u!114 &1769162347
+--- !u!114 &1769162348
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1557,9 +1557,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1769162330}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e734a10dc0e2c1a43be72697aa389bda, type: 3}
+  m_Script: {fileID: 11500000, guid: 748379927a74f2443b15a8f117268818, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 100
 --- !u!1 &1841612698
 GameObject:

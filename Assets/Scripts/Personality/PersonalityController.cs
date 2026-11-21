@@ -19,7 +19,7 @@ public class PersonalityController : MonoBehaviour
 
     private System.Random random;
 
-    // The next personality, or null while it is still hidden from the player.
+    // The next personality.
     private PersonalityType upcoming;
 
     public PersonalityType Current { get; private set; }
@@ -27,7 +27,7 @@ public class PersonalityController : MonoBehaviour
     // The number of counted actions that have happened in the current cycle.
     public int ActionsInCycle { get; private set; }
 
-    // The next personality, or null while it is still hidden from the player.
+    // The next personality, or null while it is still hidden from the player. This can be null because its a property, not a field.
     public PersonalityType? Upcoming => ActionsInCycle >= RevealAtAction ? upcoming : (PersonalityType?)null;
 
     // Raised once per cycle, with the personality the player will shift into.

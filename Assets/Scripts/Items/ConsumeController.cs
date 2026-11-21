@@ -68,7 +68,7 @@ public class ConsumeController : MonoBehaviour
         if (!player.Inventory.Items.TryRemove(item))
             return;
 
-        player.Health.Model.Heal(effect.HealAmount);
+        player.Health.Heal(effect.HealAmount);
 
         if (effect.GivesSpeedBoost)
             StartBoost();
