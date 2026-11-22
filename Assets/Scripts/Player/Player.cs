@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// The one handle gameplay code gets for the player. It holds the item counts,
-/// consumes items from the three consume slots, forwards counted actions to the
-/// personality cycle, and gives access to the player's other components.
+/// The one handle gameplay code gets for the player. It holds the item counts, consumes
+/// items from the three consume slots, owns the speed and vision stats, forwards counted
+/// actions to the personality cycle, and gives access to the player's other components.
 /// </summary>
 [RequireComponent(typeof(Health))]
 [RequireComponent(typeof(PlayerMovement))]
@@ -13,6 +13,10 @@ public class Player : MonoBehaviour
 {
     // Optional. When empty, the controller on this object is used.
     [SerializeField] private PersonalityController personality;
+
+    [Header("Stats")]
+    // Move speed in units per second before any multiplier.
+    [SerializeField] private float baseSpeed = 5f;
 
     [Header("Consuming")]
     // Each consume button is tied to one item. An item that cannot be consumed leaves its slot unused.
@@ -27,15 +31,25 @@ public class Player : MonoBehaviour
     // One count per ItemType, indexed by the enum value.
     private readonly int[] counts = new int[Enum.GetValues(typeof(ItemType)).Length];
 
+    // Keys that identify who set a multiplier, so each source can replace or remove its own.
+    private readonly object personalityKey = new object();
+    private readonly object boostKey = new object();
+
     private PlayerInputReader input;
-    private float boostRemaining;
 
     public Health Health { get; private set; }
     public PlayerMovement Movement { get; private set; }
     public PersonalityController Personality => personality;
 
+    // Move speed in units per second, and vision radius in world units.
+    public Stat Speed { get; private set; }
+    public Stat Vision { get; private set; }
+
     // Raised after an item count changes, with the item and its new count.
     public event Action<ItemType, int> InventoryChanged;
+
+    // Raised after an item was consumed, with the item.
+    public event Action<ItemType> Consumed;
 
     private void Awake()
     {
@@ -43,11 +57,21 @@ public class Player : MonoBehaviour
         Movement = GetComponent<PlayerMovement>();
         input = GetComponent<PlayerInputReader>();
 
+        Speed = new Stat(baseSpeed);
+        Vision = new Stat(0f);
+
         if (personality == null)
             personality = GetComponent<PersonalityController>();
 
         if (personality == null)
+        {
             Debug.LogError("Player found no PersonalityController.", this);
+            return;
+        }
+
+        // PersonalityController runs at execution order -100, so its Awake has already
+        // run and its profiles are ready.
+        ApplyProfile(personality.CurrentProfile);
     }
 
     private void OnEnable()
@@ -55,6 +79,9 @@ public class Player : MonoBehaviour
         input.Consume1Pressed += ConsumeSlot1;
         input.Consume2Pressed += ConsumeSlot2;
         input.Consume3Pressed += ConsumeSlot3;
+
+        if (personality != null)
+            personality.Shifted += OnShifted;
     }
 
     private void OnDisable()
@@ -62,22 +89,21 @@ public class Player : MonoBehaviour
         input.Consume1Pressed -= ConsumeSlot1;
         input.Consume2Pressed -= ConsumeSlot2;
         input.Consume3Pressed -= ConsumeSlot3;
-        EndBoost();
+
+        if (personality != null)
+            personality.Shifted -= OnShifted;
     }
 
     private void Update()
     {
-        if (boostRemaining <= 0f)
-            return;
-
-        boostRemaining -= Time.deltaTime;
-        if (boostRemaining <= 0f)
-            EndBoost();
+        Speed.Tick(Time.deltaTime);
+        Vision.Tick(Time.deltaTime);
     }
 
     // Keeps the tuning values in a sensible range when they are edited in the inspector.
     private void OnValidate()
     {
+        baseSpeed = Mathf.Max(0f, baseSpeed);
         fruitHeal = Mathf.Max(0f, fruitHeal);
         cookedSquirrelHeal = Mathf.Max(0f, cookedSquirrelHeal);
         boostMultiplier = Mathf.Max(0f, boostMultiplier);
@@ -144,9 +170,11 @@ public class Player : MonoBehaviour
 
         Health.Heal(heal);
 
+        // A second boost while one is running restarts the timer and does not stack.
         if (givesBoost)
-            StartBoost();
+            Speed.AddTimed(boostKey, boostMultiplier, boostDuration);
 
+        Consumed?.Invoke(item);
         RegisterCountedAction();
     }
 
@@ -160,16 +188,19 @@ public class Player : MonoBehaviour
     private void ConsumeSlot2() => Consume(1);
     private void ConsumeSlot3() => Consume(2);
 
-    // A second boost while one is running restarts the timer and does not stack.
-    private void StartBoost()
+    private void OnShifted(PersonalityType previous, PersonalityType current)
     {
-        boostRemaining = boostDuration;
-        Movement.SpeedMultiplier = boostMultiplier;
+        ApplyProfile(personality.CurrentProfile);
     }
 
-    private void EndBoost()
+    // Sets the stats that depend on the personality. Other multipliers, such as a running
+    // fruit boost, stay in effect across a shift.
+    private void ApplyProfile(PersonalityProfile profile)
     {
-        boostRemaining = 0f;
-        Movement.SpeedMultiplier = 1f;
+        if (profile == null)
+            return;
+
+        Speed.SetModifier(personalityKey, profile.SpeedMultiplier);
+        Vision.Base = profile.BaseVisionRadius;
     }
 }

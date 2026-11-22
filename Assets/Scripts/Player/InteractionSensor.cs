@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 // Finds the nearest interactable in range and triggers it when the interact button is pressed.
@@ -17,6 +18,9 @@ public class InteractionSensor : MonoBehaviour
     public IInteractable Current { get; private set; }
 
     public string CurrentPrompt => Current != null ? Current.PromptText : string.Empty;
+
+    // Raised after the player interacted with something.
+    public event Action<IInteractable> Interacted;
 
     private void Awake()
     {
@@ -42,8 +46,12 @@ public class InteractionSensor : MonoBehaviour
     private void HandleInteractPressed()
     {
         Current = FindNearest();
-        if (Current != null)
-            Current.Interact(player);
+        if (Current == null)
+            return;
+
+        IInteractable target = Current;
+        target.Interact(player);
+        Interacted?.Invoke(target);
     }
 
     // Returns the closest interactable that currently accepts this player, or null.
