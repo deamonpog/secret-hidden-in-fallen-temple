@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca2f7ff0e7fb72e4ea003554b6738c87, type: 3}
+  m_Name: Thinker
+  m_EditorClassIdentifier: Assembly-CSharp::PersonalityProfile
+  personality: 2
+  displayName: Thinker
+  speedMultiplier: 0.8
+  baseVisionRadius: 12
+  ability1: 4
+  ability2: 5
+  volumeProfile: {fileID: 11400000, guid: 87d740768dd9ddf43b5b582210ddfd5d, type: 2}
+  fogTint: {r: 0.25, g: 0.25, b: 0.25, a: 1}
+  ambientClip: {fileID: 0}

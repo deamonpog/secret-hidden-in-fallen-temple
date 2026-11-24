@@ -7,7 +7,7 @@ using UnityEngine;
 /// It runs early so other components can read Current during their own Awake.
 /// </summary>
 [DefaultExecutionOrder(-90)]
-public class Health : MonoBehaviour
+public class Health : MonoBehaviour, IDamageable
 {
     [SerializeField] private float maxHealth = 100f;
 

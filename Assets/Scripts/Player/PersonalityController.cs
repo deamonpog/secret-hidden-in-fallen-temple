@@ -17,7 +17,13 @@ public class PersonalityController : MonoBehaviour
 
     [SerializeField] private PersonalityType startingPersonality = PersonalityType.C;
 
+    // One profile per personality, in any order. Each profile names the personality it belongs to.
+    [SerializeField] private PersonalityProfile[] profiles;
+
     private System.Random random;
+
+    // The assigned profiles sorted by personality, so a profile is found by its enum value.
+    private PersonalityProfile[] profileByType;
 
     // The next personality.
     private PersonalityType upcoming;
@@ -26,6 +32,9 @@ public class PersonalityController : MonoBehaviour
 
     // The number of counted actions that have happened in the current cycle.
     public int ActionsInCycle { get; private set; }
+
+    // The profile of the current personality. Null when none was assigned for it.
+    public PersonalityProfile CurrentProfile => profileByType[(int)Current];
 
     // The next personality, or null while it is still hidden from the player. This can be null because its a property, not a field.
     public PersonalityType? Upcoming => ActionsInCycle >= RevealAtAction ? upcoming : (PersonalityType?)null;
@@ -41,9 +50,38 @@ public class PersonalityController : MonoBehaviour
 
     private void Awake()
     {
+        BuildProfileLookup();
         random = new System.Random();
         Current = startingPersonality;
         upcoming = RollUpcoming();
+    }
+
+    // Sorts the assigned profiles by personality and reports any that are missing or duplicated.
+    private void BuildProfileLookup()
+    {
+        int count = Enum.GetValues(typeof(PersonalityType)).Length;
+        profileByType = new PersonalityProfile[count];
+
+        if (profiles != null)
+        {
+            foreach (PersonalityProfile profile in profiles)
+            {
+                if (profile == null)
+                    continue;
+
+                int index = (int)profile.Personality;
+                if (profileByType[index] != null)
+                    Debug.LogError($"Two profiles are assigned to personality {profile.Personality}.", this);
+
+                profileByType[index] = profile;
+            }
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            if (profileByType[i] == null)
+                Debug.LogError($"No profile is assigned to personality {(PersonalityType)i}.", this);
+        }
     }
 
     // Records one counted action and shifts personality when the cycle is complete.

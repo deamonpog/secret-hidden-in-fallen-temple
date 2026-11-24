@@ -96,6 +96,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2222111361404534124, guid: 88f2fd29f58b9734683512546acec310, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8398505338387587635}
+    - targetCorrespondingSourceObject: {fileID: 2222111361404534124, guid: 88f2fd29f58b9734683512546acec310, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2618778669447480641}
   m_SourcePrefab: {fileID: 100100000, guid: 88f2fd29f58b9734683512546acec310, type: 3}
 --- !u!4 &1516575790135507595 stripped
 Transform:
@@ -125,6 +128,29 @@ MonoBehaviour:
   onUse: 2
   visual: {fileID: 8876370921014732303}
   prompt: Take fruit
+--- !u!114 &2618778669447480641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1516575790135535275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e63a4860dc49ca4088e0548cfc391e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FearSource
+  player: {fileID: 0}
+  affectedPersonality: 1
+  range: 4
+  chargeSeconds: 5
+  cooldownSeconds: 3
+  damage: 10
+  calmLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  calmRadius: 4
+  calmFactor: 0.3
 --- !u!1001 &1180637083437787890
 PrefabInstance:
   m_ObjectHideFlags: 0

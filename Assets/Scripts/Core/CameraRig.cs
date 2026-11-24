@@ -4,8 +4,9 @@ using UnityEngine;
 /// Handles everything the camera does with input: cursor lock, yaw and zoom. 
 /// Attach it to the camera root, which must be a child of the object that has PlayerInputReader. 
 /// Assign the camera in the inspector. It must be a child of the camera root. 
-/// The cursor follows the saved camera rotate mode: 
-///     LockedCursor: the cursor stays locked, and the Pause button frees or re-locks it. 
+/// The cursor follows the saved camera rotate mode, and is always free while the game is 
+/// not being played (paused, failed or completed): 
+///     LockedCursor: the cursor stays locked while the game is played. 
 ///     HoldToRotate: the cursor is locked only while the rotate-hold button is held.
 /// </summary>
 public class CameraRig : MonoBehaviour
@@ -22,7 +23,6 @@ public class CameraRig : MonoBehaviour
     [SerializeField] private float smoothTime = 0.12f;
 
     private PlayerInputReader input;
-    private bool releasedByPlayer;
 
     private float yaw;
 
@@ -49,18 +49,8 @@ public class CameraRig : MonoBehaviour
         zoomAxis = cameraTransform.localRotation * Vector3.forward;
     }
 
-    private void OnEnable()
-    {
-        input.PausePressed += OnPausePressed;
-        GameSettings.RotateModeChanged += OnRotateModeChanged;
-    }
-
     private void OnDisable()
     {
-        if (input != null)
-            input.PausePressed -= OnPausePressed;
-
-        GameSettings.RotateModeChanged -= OnRotateModeChanged;
         SetCursorLocked(false);
     }
 
@@ -72,10 +62,12 @@ public class CameraRig : MonoBehaviour
         UpdateZoom();
     }
 
+    // RotateHeld is already false while the game is not being played, so both modes
+    // free the cursor then.
     private void UpdateCursor()
     {
         bool wantLocked = GameSettings.RotateMode == CameraRotateMode.LockedCursor
-            ? !releasedByPlayer
+            ? input.GameplayEnabled
             : input.RotateHeld;
 
         SetCursorLocked(wantLocked);
@@ -107,16 +99,6 @@ public class CameraRig : MonoBehaviour
 
         currentOffset = Mathf.SmoothDamp(currentOffset, targetOffset, ref offsetVelocity, smoothTime);
         cameraTransform.localPosition = baseCameraPosition + zoomAxis * currentOffset;
-    }
-
-    private void OnPausePressed()
-    {
-        releasedByPlayer = !releasedByPlayer;
-    }
-
-    private void OnRotateModeChanged()
-    {
-        releasedByPlayer = false;
     }
 
     private static void SetCursorLocked(bool locked)

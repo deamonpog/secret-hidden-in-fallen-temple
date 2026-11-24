@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 // Finds the nearest interactable in range and triggers it when the interact button is pressed.
@@ -17,6 +18,9 @@ public class InteractionSensor : MonoBehaviour
     public IInteractable Current { get; private set; }
 
     public string CurrentPrompt => Current != null ? Current.PromptText : string.Empty;
+
+    // Raised after the player interacted with something.
+    public event Action<IInteractable> Interacted;
 
     private void Awake()
     {
@@ -42,8 +46,12 @@ public class InteractionSensor : MonoBehaviour
     private void HandleInteractPressed()
     {
         Current = FindNearest();
-        if (Current != null)
-            Current.Interact(player);
+        if (Current == null)
+            return;
+
+        IInteractable target = Current;
+        target.Interact(player);
+        Interacted?.Invoke(target);
     }
 
     // Returns the closest interactable that currently accepts this player, or null.
@@ -62,7 +70,7 @@ public class InteractionSensor : MonoBehaviour
             if (candidate == null || !candidate.CanInteract(player))
                 continue;
 
-            float distance = (hits[i].ClosestPoint(origin) - origin).sqrMagnitude;
+            float distance = (ClosestPoint(hits[i], origin) - origin).sqrMagnitude;
             if (distance < bestDistance)
             {
                 bestDistance = distance;
@@ -71,5 +79,16 @@ public class InteractionSensor : MonoBehaviour
         }
 
         return best;
+    }
+
+    // Returns the point on the collider closest to the position. A mesh collider that is
+    // not convex cannot answer this, so its bounding box is used instead.
+    private static Vector3 ClosestPoint(Collider collider, Vector3 position)
+    {
+        MeshCollider mesh = collider as MeshCollider;
+        if (mesh != null && !mesh.convex)
+            return collider.bounds.ClosestPoint(position);
+
+        return collider.ClosestPoint(position);
     }
 }

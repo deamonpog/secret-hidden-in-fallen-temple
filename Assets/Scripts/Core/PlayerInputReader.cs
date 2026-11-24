@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 
 // Reads the Player action map and exposes it to gameplay code.
 // Continuous values are polled; button presses are raised as events.
+// While GameplayEnabled is false (paused, failed or completed) movement, look and zoom
+// read as zero and all button presses are dropped, except Pause.
 [RequireComponent(typeof(PlayerInput))]
 public class PlayerInputReader : MonoBehaviour
 {
@@ -22,17 +24,20 @@ public class PlayerInputReader : MonoBehaviour
     private InputAction rotateHoldAction;
     private InputAction pauseAction;
 
+    // Set by GameManager. False while the run is not being played.
+    public bool GameplayEnabled { get; set; } = true;
+
     // Movement input as a 2D vector (x = right, y = forward).
-    public Vector2 Move => moveAction.ReadValue<Vector2>();
+    public Vector2 Move => GameplayEnabled ? moveAction.ReadValue<Vector2>() : Vector2.zero;
 
     // Pointer or stick delta used to rotate the camera.
-    public Vector2 Look => lookAction.ReadValue<Vector2>();
+    public Vector2 Look => GameplayEnabled ? lookAction.ReadValue<Vector2>() : Vector2.zero;
 
     // Scroll value used to zoom the camera.
-    public float Zoom => zoomAction.ReadValue<float>();
+    public float Zoom => GameplayEnabled ? zoomAction.ReadValue<float>() : 0f;
 
     // True while the rotate-hold button (middle mouse) is held down.
-    public bool RotateHeld => rotateHoldAction.IsPressed();
+    public bool RotateHeld => GameplayEnabled && rotateHoldAction.IsPressed();
 
     public event Action InteractPressed;
     public event Action Skill1Pressed;
@@ -85,12 +90,14 @@ public class PlayerInputReader : MonoBehaviour
         pauseAction.performed -= HandlePause;
     }
 
-    private void HandleInteract(InputAction.CallbackContext context) => InteractPressed?.Invoke();
-    private void HandleSkill1(InputAction.CallbackContext context) => Skill1Pressed?.Invoke();
-    private void HandleSkill2(InputAction.CallbackContext context) => Skill2Pressed?.Invoke();
-    private void HandleConsume1(InputAction.CallbackContext context) => Consume1Pressed?.Invoke();
-    private void HandleConsume2(InputAction.CallbackContext context) => Consume2Pressed?.Invoke();
-    private void HandleConsume3(InputAction.CallbackContext context) => Consume3Pressed?.Invoke();
-    private void HandleTrack(InputAction.CallbackContext context) => TrackPressed?.Invoke();
+    private void HandleInteract(InputAction.CallbackContext context) { if (GameplayEnabled) InteractPressed?.Invoke(); }
+    private void HandleSkill1(InputAction.CallbackContext context) { if (GameplayEnabled) Skill1Pressed?.Invoke(); }
+    private void HandleSkill2(InputAction.CallbackContext context) { if (GameplayEnabled) Skill2Pressed?.Invoke(); }
+    private void HandleConsume1(InputAction.CallbackContext context) { if (GameplayEnabled) Consume1Pressed?.Invoke(); }
+    private void HandleConsume2(InputAction.CallbackContext context) { if (GameplayEnabled) Consume2Pressed?.Invoke(); }
+    private void HandleConsume3(InputAction.CallbackContext context) { if (GameplayEnabled) Consume3Pressed?.Invoke(); }
+    private void HandleTrack(InputAction.CallbackContext context) { if (GameplayEnabled) TrackPressed?.Invoke(); }
+
+    // Pause is always raised, so a paused game can be resumed.
     private void HandlePause(InputAction.CallbackContext context) => PausePressed?.Invoke();
 }
