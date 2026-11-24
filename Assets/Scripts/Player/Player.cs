@@ -18,6 +18,10 @@ public class Player : MonoBehaviour
     // Move speed in units per second before any multiplier.
     [SerializeField] private float baseSpeed = 5f;
 
+    [Header("Hiding")]
+    // Movement input length above which the player stops hiding.
+    [SerializeField] private float hideBreakInput = 0.1f;
+
     [Header("Consuming")]
     // Each consume button is tied to one item. An item that cannot be consumed leaves its slot unused.
     [SerializeField]
@@ -41,6 +45,24 @@ public class Player : MonoBehaviour
     public PlayerMovement Movement { get; private set; }
     public PersonalityController Personality => personality;
 
+    // Null when there is no Abilities component on this object.
+    public Abilities Abilities { get; private set; }
+
+    // The input reader on this object, for classes that need to read movement.
+    public PlayerInputReader InputReader => input;
+
+    // True while the player hides in a bush or behind a stone. Moving ends it.
+    public bool Hidden { get; private set; }
+
+    // The bush or stone the player hides in, or null when not hidden.
+    public Transform HideSpot { get; private set; }
+
+    // True while the player stands on a stone. Set by Stone. Movement input is ignored.
+    public bool Climbing { get; set; }
+
+    // True when creatures should not see the player: hiding, or the Invisible ability.
+    public bool IsConcealed => Hidden || (Abilities != null && Abilities.IsInvisible);
+
     // Move speed in units per second, and vision radius in world units.
     public Stat Speed { get; private set; }
     public Stat Vision { get; private set; }
@@ -56,6 +78,7 @@ public class Player : MonoBehaviour
         Health = GetComponent<Health>();
         Movement = GetComponent<PlayerMovement>();
         input = GetComponent<PlayerInputReader>();
+        Abilities = GetComponent<Abilities>();
 
         Speed = new Stat(baseSpeed);
         Vision = new Stat(0f);
@@ -98,6 +121,8 @@ public class Player : MonoBehaviour
     {
         Speed.Tick(Time.deltaTime);
         Vision.Tick(Time.deltaTime);
+        if (Hidden && input.Move.sqrMagnitude > hideBreakInput * hideBreakInput)
+            StopHiding();
     }
 
     // Keeps the tuning values in a sensible range when they are edited in the inspector.
@@ -108,6 +133,7 @@ public class Player : MonoBehaviour
         cookedSquirrelHeal = Mathf.Max(0f, cookedSquirrelHeal);
         boostMultiplier = Mathf.Max(0f, boostMultiplier);
         boostDuration = Mathf.Max(0f, boostDuration);
+        hideBreakInput = Mathf.Clamp01(hideBreakInput);
     }
 
     // Returns how many of the item the player carries.
@@ -176,6 +202,23 @@ public class Player : MonoBehaviour
 
         Consumed?.Invoke(item);
         RegisterCountedAction();
+    }
+
+    // Starts hiding in the given bush or stone. Does nothing when already hiding there.
+    public void Hide(Transform spot)
+    {
+        if (Hidden && HideSpot == spot)
+            return;
+
+        Hidden = true;
+        HideSpot = spot;
+    }
+
+    // Stops hiding.
+    public void StopHiding()
+    {
+        Hidden = false;
+        HideSpot = null;
     }
 
     // Reports one successful action to the personality cycle.

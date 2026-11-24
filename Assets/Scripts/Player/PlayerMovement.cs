@@ -3,6 +3,7 @@ using UnityEngine;
 // Moves the player along the ground relative to the direction the camera is facing.
 // Reads movement from PlayerInputReader and the speed from Player, and moves with a
 // CharacterController. The body object turns toward the direction of travel.
+// Movement input is ignored while the player is dead or climbing.
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInputReader))]
 public class PlayerMovement : MonoBehaviour
@@ -48,7 +49,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        Vector2 move = player.Health.IsDead ? Vector2.zero : input.Move;
+        Vector2 move = player.Health.IsDead || player.Climbing ? Vector2.zero : input.Move;
 
         // Flatten the camera axes so looking down at the ground does not slow movement.
         Vector3 forward = Vector3.ProjectOnPlane(cameraTransform.forward, Vector3.up).normalized;
@@ -64,5 +65,14 @@ public class PlayerMovement : MonoBehaviour
             Quaternion target = Quaternion.LookRotation(direction, Vector3.up);
             body.rotation = Quaternion.RotateTowards(body.rotation, target, turnSpeed * Time.deltaTime);
         }
+    }
+
+    // Moves the player to a position at once. The controller is switched off for the move,
+    // because it would otherwise overwrite a changed position.
+    public void TeleportTo(Vector3 position)
+    {
+        controller.enabled = false;
+        transform.position = position;
+        controller.enabled = true;
     }
 }

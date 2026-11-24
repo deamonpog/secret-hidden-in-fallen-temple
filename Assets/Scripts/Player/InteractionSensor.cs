@@ -70,7 +70,7 @@ public class InteractionSensor : MonoBehaviour
             if (candidate == null || !candidate.CanInteract(player))
                 continue;
 
-            float distance = (hits[i].ClosestPoint(origin) - origin).sqrMagnitude;
+            float distance = (ClosestPoint(hits[i], origin) - origin).sqrMagnitude;
             if (distance < bestDistance)
             {
                 bestDistance = distance;
@@ -79,5 +79,16 @@ public class InteractionSensor : MonoBehaviour
         }
 
         return best;
+    }
+
+    // Returns the point on the collider closest to the position. A mesh collider that is
+    // not convex cannot answer this, so its bounding box is used instead.
+    private static Vector3 ClosestPoint(Collider collider, Vector3 position)
+    {
+        MeshCollider mesh = collider as MeshCollider;
+        if (mesh != null && !mesh.convex)
+            return collider.bounds.ClosestPoint(position);
+
+        return collider.ClosestPoint(position);
     }
 }

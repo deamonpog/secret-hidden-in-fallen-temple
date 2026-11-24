@@ -38,10 +38,23 @@ public class DebugLog : MonoBehaviour
     [SerializeField] private int stars;
     [SerializeField] private float timeScale;
 
+    [Header("Interaction and tracking")]
+    [SerializeField] private string interactPrompt;
+    [SerializeField] private bool trackActive;
+    [SerializeField] private string trackTarget;
+    [SerializeField] private float trackSecondsLeft;
+
+    [Header("Hiding")]
+    [SerializeField] private bool hidden;
+    [SerializeField] private bool concealed;
+    [SerializeField] private bool climbing;
+
     private Player player;
     private Health health;
     private PersonalityController personality;
     private Abilities abilities;
+    private InteractionSensor sensor;
+    private Tracker tracker;
 
     private void Awake()
     {
@@ -51,6 +64,8 @@ public class DebugLog : MonoBehaviour
         health = GetComponent<Health>();
         personality = GetComponent<PersonalityController>();
         abilities = GetComponent<Abilities>();
+        sensor = GetComponent<InteractionSensor>();
+        tracker = GetComponent<Tracker>();
     }
 
     private void OnEnable()
@@ -113,6 +128,18 @@ public class DebugLog : MonoBehaviour
             seed = gameManager.Seed;
             stars = gameManager.Stars;
         }
+
+        interactPrompt = sensor != null ? sensor.CurrentPrompt : "none";
+        if (tracker != null)
+        {
+            trackActive = tracker.Active;
+            trackTarget = tracker.Target != null ? tracker.Target.name : "none";
+            trackSecondsLeft = tracker.SecondsLeft;
+        }
+
+        hidden = player.Hidden;
+        concealed = player.IsConcealed;
+        climbing = player.Climbing;
     }
 
     private void LogUpcoming(PersonalityType next)
@@ -197,5 +224,23 @@ public class DebugLog : MonoBehaviour
     private void NewRunTest()
     {
         gameManager.NewRun();
+    }
+
+    [ContextMenu("Add 3 flowers")]
+    private void AddFlowersTest()
+    {
+        player.Add(ItemType.Flower, 3);
+    }
+
+    [ContextMenu("Add fruit")]
+    private void AddFruitTest()
+    {
+        player.Add(ItemType.Fruit);
+    }
+
+    [ContextMenu("Add clue point")]
+    private void AddCluePointTest()
+    {
+        player.Add(ItemType.CluePoint);
     }
 }

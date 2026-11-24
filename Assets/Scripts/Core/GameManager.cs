@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,6 +14,9 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Player player;
 
+    // Optional. Builds the level at the start of each run. Empty in the hand-built test scene.
+    [SerializeField] private WorldGenerator generator;
+
     // The seed chosen for the next run. It is static so it survives the scene reload that
     // starts a new run. Zero means no seed was chosen yet.
     private static int pendingSeed;
@@ -22,6 +26,11 @@ public class GameManager : MonoBehaviour
     public GameState State { get; private set; } = GameState.Boot;
     public int Seed { get; private set; }
     public int Stars { get; private set; }
+
+    private readonly List<Shrine> shrines = new List<Shrine>();
+
+    // Every shrine in the level, active or not. Tracker reads this.
+    public IReadOnlyList<Shrine> Shrines => shrines;
 
     // Raised after the state changed, with the new state.
     public event Action<GameState> StateChanged;
@@ -75,7 +84,9 @@ public class GameManager : MonoBehaviour
 
         SetState(GameState.Generating);
 
-        // The world generator does not exist yet, so generating takes no time.
+        if (generator != null)
+            generator.Generate(Seed);
+
         SetState(GameState.Playing);
     }
 
@@ -118,6 +129,19 @@ public class GameManager : MonoBehaviour
         pendingSeed = NewSeed();
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    // Adds a shrine to the list. Shrines call this when they are enabled.
+    public void RegisterShrine(Shrine shrine)
+    {
+        if (!shrines.Contains(shrine))
+            shrines.Add(shrine);
+    }
+
+    // Removes a shrine from the list. Shrines call this when they are disabled.
+    public void UnregisterShrine(Shrine shrine)
+    {
+        shrines.Remove(shrine);
     }
 
     private void OnPausePressed()
